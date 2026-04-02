@@ -9,9 +9,10 @@ text = transcribe(audio_path)
 print("Transcribed:", text)
 
 raw_answer = handle_query(text)
-final_answer = format_response(text, raw_answer)
+print("Raw Answer:", raw_answer)
 
-print("Response:", final_answer)
+final_answer = format_response(text, raw_answer)
+print("Final Response:", final_answer)
 
 generate_audio(final_answer, "response.mp3")
 

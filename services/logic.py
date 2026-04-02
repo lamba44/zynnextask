@@ -8,6 +8,20 @@ with open("data/policies.json") as f:
     policies = json.load(f)
 
 
+def normalize_text(text):
+    text = text.lower()
+    text = text.replace("ordered", "order")
+    return text
+
+
+def extract_order_id(text):
+    text = text.upper()
+    match = re.search(r"ORD\s*\d+", text)
+    if match:
+        return match.group(0).replace(" ", "")
+    return None
+
+
 def find_order(order_id):
     for o in orders:
         if o["order_id"] == order_id:
@@ -16,18 +30,17 @@ def find_order(order_id):
 
 
 def handle_query(text):
-    text = text.lower()
-
-    order_match = re.search(r"ord\d+", text.upper())
-    order_id = order_match.group(0) if order_match else None
+    text = normalize_text(text)
+    order_id = extract_order_id(text)
 
     if "order" in text and order_id:
         order = find_order(order_id)
         if not order:
-            return "Order not found"
+            return f"Order {order_id} not found"
 
         if order["status"] == "delivered":
             return f"Order {order_id} was delivered on {order['delivery_date']}"
+
         if order["status"] == "in_transit":
             return f"Order {order_id} is in transit and will arrive by {order['expected_delivery']}"
 
